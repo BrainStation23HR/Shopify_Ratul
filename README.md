@@ -68,7 +68,7 @@ npm run serve # this will use my static cloud flare tunnel https://tunnel.trustp
 
 # Walk-through video
 
-![Watch the walkthrough](https://www.youtube.com/watch?v=zXElllX5IZk)
+[![Watch the walkthrough](https://img.youtube.com/vi/zXElllX5IZk/hqdefault.jpg)](https://www.youtube.com/watch?v=zXElllX5IZk)
 
 ## Theme Development
 
