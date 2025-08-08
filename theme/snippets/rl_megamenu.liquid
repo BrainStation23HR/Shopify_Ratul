@@ -1,0 +1,86 @@
+{%- for block in section.blocks -%}
+    {%- case block.type -%}
+        {%- when 'mega_menu' -%}
+            {%- if block.settings.title != blank and block.settings.title contains link -%}
+                <header-menu>
+                    <header-menu-item>
+                        <div class="page-width ">
+                            <div class="mega-menu__wrapper">
+                                <div class="mega-menu__list-title">
+                                    {%- for index in (1..3) -%}
+                                        {% liquid
+                                            assign title = 'title_' | append: index
+                                        %}
+
+                                        {%- if block.settings[title] != blank -%}
+                                            <h4 class="mega_menu-heading mega_menu-{{ index }}" data-handle="megamneu-{{ index }}">{{ block.settings[title] | escape }}</h4>
+                                        {%- endif -%}
+                                    {%- endfor -%}
+                                </div>
+                                <div class="mega-menu__list-collection">
+
+                                    {%- for index in (1..3) -%}
+                                        {%- liquid
+                                            assign collection_setting_id = 'category_' | append: index
+                                            assign collection_id =  block.settings[collection_setting_id]
+                                            assign col = collections[ collection_id ]
+                                        -%}
+                                        <ul
+                                                class="grid grid--3-col-desktop grid--2-col-tablet-down
+                                        grid--1-col-tablet-down megamneu-{{ index }} megamneu-item"
+                                                role="list"
+                                                aria-label="{{ 'general.slider.name' | t }}"
+                                        >
+
+                                            {%- if col != nil and col.products_count > 0 -%}
+                                                {%- for product in col.products limit: 3 -%}
+                                                    <li
+                                                            class="grid__item scroll-trigger animate--slide-in"
+                                                            data-cascade
+                                                            style="--animation-order: {{ forloop.index }};"
+                                                    >
+                                                        {%- render 'card-product',
+                                                                card_product: product,
+                                                                show_vendor: true,
+                                                                media_aspect_ratio: section.settings.image_ratio,
+                                                                image_shape: section.settings.image_shape,
+                                                                lazy_load: true,
+                                                                section_id: section.id
+                                                        -%}
+                                                    </li>
+                                                {%- endfor -%}
+                                            {%- endif -%}
+                                        </ul>
+                                    {%- endfor -%}
+
+                                </div>
+                                <div class="mega-menu-banner ">
+                                    {%- for index in (1..3) -%}
+                                        {% liquid
+                                            assign image = 'image_' | append: index
+                                            assign url = 'url_' | append: index
+                                            assign banner_text = 'banner_text_' | append: index
+                                        %}
+                                        {%- if block.settings[image] != blank -%}
+                                            <div class="isolate megamneu-{{ index }} megamneu-item">
+                                                {%- if block.settings[url] != blank -%}
+                                                    <a class="link_overlay" href="{{ block.settings[url] }}"></a>
+                                                {%- endif -%}
+                                                <img src="{{ block.settings[image] | img_url: "large" }}" alt="{{ block.settings[image] | escape }}">
+
+
+                                                {%- if block.settings[banner_text] != blank -%}
+                                                    <p class="mega-menu-banner-text">{{ block.settings[banner_text] }}</p>
+                                                {%- endif -%}
+
+                                            </div>
+                                        {%- endif -%}
+                                    {%- endfor -%}
+                                </div>
+                            </div>
+                        </div>
+                    </header-menu-item>
+                </header-menu>
+            {%- endif -%}
+    {%- endcase -%}
+{%- endfor -%}

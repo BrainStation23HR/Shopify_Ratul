@@ -1,0 +1,130 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "image_banner": {
+      "type": "image-banner",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Browse our latest products",
+            "heading_size": "h0"
+          }
+        },
+        "button": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Shop all",
+            "button_link_1": "shopify://collections/all",
+            "button_style_secondary_1": true,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "button"
+      ],
+      "settings": {
+        "image_overlay_opacity": 40,
+        "image_height": "large",
+        "image_behavior": "none",
+        "desktop_content_position": "bottom-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": false,
+        "color_scheme": "scheme-3",
+        "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
+        "show_text_below": false
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "all",
+        "products_to_show": 8,
+        "title": "Featured products",
+        "heading_size": "h2",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-1",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "standard",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 44,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_carousel_BNjDTx": {
+      "type": "featured-collection-carousel",
+      "blocks": {
+        "promotional_content_CTwgkV": {
+          "type": "promotional_content",
+          "settings": {
+            "image": "shopify://shop_images/wax-special.png",
+            "title": "Special Offer",
+            "description": "<p>Discover amazing products with special discounts.</p>",
+            "button_text": "Shop Now",
+            "button_url": "",
+            "button_style": "primary"
+          }
+        }
+      },
+      "block_order": [
+        "promotional_content_CTwgkV"
+      ],
+      "name": "Featured Collection Carousel",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "heading": "Featured Collection",
+        "description": "",
+        "collection": "automated-collection",
+        "quick_add": "standard",
+        "columns_desktop": 4,
+        "columns_gap": 10,
+        "columns_tabs": 3,
+        "columns_mobile": "1",
+        "carousel_autoplay": false,
+        "carousel_interval": 3000,
+        "carousel_loop": false,
+        "carousel_arrow": true,
+        "carousel_pagination": true,
+        "carousel_transition": 400,
+        "show_view_all": true,
+        "show_rating": false,
+        "show_vendor": false,
+        "enable_quick_view": true,
+        "enable_image_slideshow": true,
+        "image_ratio": "adapt",
+        "show_promo_content": true,
+        "promo_position": "left"
+      }
+    }
+  },
+  "order": [
+    "image_banner",
+    "featured_collection",
+    "featured_collection_carousel_BNjDTx"
+  ]
+}

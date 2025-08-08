@@ -1,0 +1,45 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "8fbccc0a8e5c0a08027d49132306adcf"
+name = "Dynamic Delivery"
+handle = "dynamic-delivery"
+application_url = "https://tunnel.trustpulse.xyz"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2025-07"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+[[webhooks.subscriptions]]
+topics = [
+  "orders/create",
+  "orders/cancelled"
+]
+uri = "/webhooks/all"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_orders,read_orders,write_products,write_discounts,write_shipping,read_shipping"
+
+[auth]
+redirect_urls = ["https://tunnel.trustpulse.xyz/auth/callback", "https://tunnel.trustpulse.xyz/auth/shopify/callback", "https://tunnel.trustpulse.xyz/api/auth/callback"]
+
+[pos]
+embedded = false
+
+[app_proxy]
+url = "https://tunnel.trustpulse.xyz/apps/delivery-scheduler"
+subpath = "delivery-scheduler"
+prefix = "apps"
+

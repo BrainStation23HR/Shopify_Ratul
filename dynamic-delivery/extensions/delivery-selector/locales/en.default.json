@@ -1,0 +1,16 @@
+{
+  "delivery": {
+    "title": "Select Delivery Time",
+    "zone_loading": "Checking delivery availability...",
+    "zone_not_available": "Delivery is not available in your area",
+    "zone_error": "Unable to check delivery availability",
+    "date_label": "Select delivery date",
+    "time_label": "Select delivery time",
+    "no_slots": "No delivery slots available for this date",
+    "slots_loading": "Loading available time slots...",
+    "delivery_scheduled": "Delivery scheduled for {date} between {startTime} - {endTime}",
+    "spots_remaining": "{count} spots left",
+    "choose_time_slot": "Choose a time slot",
+    "delivery_info": "Delivery available to {zone} - ${rate}"
+  }
+}

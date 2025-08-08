@@ -1,0 +1,178 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  DELIVERED
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+}
+
+model Shop {
+  id                   String         @id @default(uuid(7))
+  shopify_id           String         @unique @db.VarChar(50)
+  name                 String         @unique @db.VarChar(100)
+  shop_owner_name      String?        @db.VarChar(100)
+  email                String?        @db.VarChar(255)
+  contact_email        String?        @db.VarChar(255)
+  localization         String?        @db.VarChar(10)
+  timezone             String?        @db.VarChar(10)
+  shopify_domain       String?        @db.VarChar(255)
+  subscription_id      String?        @db.VarChar(256)
+  is_premium           Boolean        @default(false)
+  shopify_plan         Json?
+  status               Boolean        @default(true)
+  onboarding_completed Boolean        @default(false)
+  deleted_at           DateTime?      @db.DateTime(0)
+  created_at           DateTime?      @default(now())
+  updated_at           DateTime?      @updatedAt
+  ShopSettings         ShopSettings[]
+  Order                Order[]
+  DeliverySlot         DeliverySlot[]
+  DeliveryZone         DeliveryZone[]
+  BlackoutDate         BlackoutDate[]
+
+  @@map("shops")
+}
+
+model ShopSettings {
+  id                    String   @id @default(cuid())
+  shopName              String   @unique
+  cutoffTime            String   @default("14:00")
+  maxDaysInAdvance      Int      @default(30)
+  enableSameDayDelivery Boolean  @default(false)
+  // Add timezone support
+  timezone              String   @default("UTC")
+  // Add business hours
+  businessHours         Json? // Store as {"monday": {"start": "09:00", "end": "17:00"}, ...}
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  shop Shop @relation(fields: [shopName], references: [name])
+
+  @@map("shop_settings")
+}
+
+model Order {
+  id               String       @id @default(cuid())
+  shopName         String
+  shopifyOrderId   String       @unique
+  customerEmail    String
+  deliverySlotId   String
+  deliveryDate     DateTime     @db.Date // Add this field
+  status           OrderStatus  @default(PENDING)
+  totalAmount      Float        @db.Double
+  shippingAddress  Json
+  deliveryNotes    String?      @db.Text
+  trackingNumber   String?
+  smsNotifications Boolean      @default(false)
+  customerPhone    String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  deliverySlot     DeliverySlot @relation(fields: [deliverySlotId], references: [id])
+  shop             Shop         @relation(fields: [shopName], references: [name])
+
+  @@map("orders")
+}
+
+model DeliverySlot {
+  id              String       @id @default(cuid())
+  shopName        String
+  startTime       String       @db.VarChar(5) // "09:00"
+  endTime         String       @db.VarChar(5) // "17:00"
+  capacity        Int
+  currentOrders   Int          @default(0)
+  isActive        Boolean      @default(true)
+  zoneId          String
+  zone            DeliveryZone @relation(fields: [zoneId], references: [id])
+  orders          Order[]
+  priceAdjustment Float?       @default(0.0) @db.Double
+  notes           String?      @db.Text
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  shop            Shop         @relation(fields: [shopName], references: [name])
+
+  // Ensure unique slots per zone per date/time
+  @@unique([shopName, zoneId, startTime, endTime])
+  @@map("delivery_slots")
+}
+
+model DeliveryZone {
+  id           String         @id @default(cuid())
+  shopName     String
+  name         String
+  shippingRate Float          @db.Double
+  // Add zone-specific settings
+  isActive     Boolean        @default(true)
+  priority     Int            @default(0) // For ordering zones
+  description  String?        @db.Text
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  slots        DeliverySlot[]
+  shop         Shop           @relation(fields: [shopName], references: [name])
+  BlackoutDate BlackoutDate[]
+
+  // Ensure unique zone names per shop
+  @@unique([shopName, name])
+  @@map("delivery_zones")
+}
+
+model BlackoutDate {
+  id          String        @id @default(cuid())
+  shopName    String
+  date        DateTime      @db.Date
+  reason      String?       @db.Text
+  isRecurring Boolean       @default(false)
+  // Add time-specific blackouts
+  startTime   String?       @db.VarChar(5) // Optional: block only specific hours
+  endTime     String?       @db.VarChar(5)
+  // Add zone-specific blackouts
+  zoneId      String? // Optional: block only specific zones
+  createdAt   DateTime      @default(now())
+  shop        Shop          @relation(fields: [shopName], references: [name])
+  zone        DeliveryZone? @relation(fields: [zoneId], references: [id])
+
+  // Ensure no duplicate blackout dates per shop
+  @@unique([shopName, date, zoneId])
+  @@map("blackout_dates")
+}
+
+// Add delivery tracking/history
+model DeliveryAttempt {
+  id          String   @id @default(cuid())
+  orderId     String
+  attemptDate DateTime
+  status      String // "ATTEMPTED", "DELIVERED", "FAILED", "RESCHEDULED"
+  notes       String?  @db.Text
+  driverNotes String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@map("delivery_attempts")
+}

@@ -1,0 +1,453 @@
+{{ 'featured-collection-carousel.css' | asset_url | stylesheet_tag }}
+
+{%- unless section.settings.quick_add == 'none' -%}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+{%- endunless -%}
+
+{%- if section.settings.quick_add == 'standard' -%}
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if section.settings.quick_add == 'bulk' -%}
+  <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+
+{% liquid
+  assign carousel_autoplay = section.settings.carousel_autoplay | default: false
+  assign carousel_interval = section.settings.carousel_interval | default: 3000
+  assign carousel_loop = section.settings.carousel_loop | default: false
+  assign carousel_arrow = section.settings.carousel_arrow | default: false
+  assign carousel_pagination = section.settings.carousel_pagination | default: false
+  assign carousel_transition = section.settings.carousel_transition | default: 400
+
+  assign columns_mobile = section.settings.columns_mobile | default: "1"
+  assign columns_desktop = section.settings.columns_desktop | default: 4
+  assign columns_tab = section.settings.columns_tabs | default: 3
+  assign columns_gap = section.settings.columns_gap | default: 10
+%}
+
+
+  <div class="featured-collection-carousel section-{{ section.id }}-padding color-{{ section.settings.color_scheme }} gradient">
+    <div class="featured-collection-carousel__container page-width">
+      {% if section.settings.heading != blank %}
+        <div class="featured-collection-carousel__header">
+          <h2 class="featured-collection-carousel__title">{{ section.settings.heading }}</h2>
+          {% if section.settings.description != blank %}
+            <div class="featured-collection-carousel__description">{{ section.settings.description }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+       
+      <div class="featured-collection-carousel__content-">
+{% if section.settings.show_promo_content and section.blocks.size > 0 %}
+          {% assign promo_block = section.blocks | where: 'type', 'promotional_content' | first %}
+          {% if promo_block %}
+            <div class="featured-collection-carousel__promo featured-collection-carousel__promo--{{ section.settings.promo_position }}">
+              {% if promo_block.settings.image %}
+                <div class="featured-collection-carousel__promo-image">
+                  <img
+                    src="{{ promo_block.settings.image |  img_url: 'master' }}"
+                    alt="{{ promo_block.settings.image.alt | escape }}"
+                    loading="lazy"
+                    class="image-fit"
+                  >
+                </div>
+              {% endif %}
+
+              <div class="featured-collection-carousel__promo-content">
+                {% if promo_block.settings.title != blank %}
+                  <h3 class="featured-collection-carousel__promo-title">{{ promo_block.settings.title }}</h3>
+                {% endif %}
+                {% if promo_block.settings.description != blank %}
+                  <div class="featured-collection-carousel__promo-description">{{ promo_block.settings.description }}</div>
+                {% endif %}
+                {% if promo_block.settings.button_text != blank  %}
+                  <a href="{{ promo_block.settings.button_url }}" class="button button--primary">
+                    {{ promo_block.settings.button_text }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+        
+ <featured-collection-carousel>
+        <div class="featured-collection-carousel__products">
+          {% liquid
+            assign collection = collections[section.settings.collection]
+            assign products_to_show = section.settings.products_to_show | default: 8
+
+            if collection == empty
+              assign collection = collections.all
+            endif
+          %}
+
+          <div
+            class="product-carousel swiper"
+            id="carousel-{{ section.id }}"
+            data-interval="{{ carousel_interval }}"
+            data-loop="{{ carousel_loop }}"
+            data-arrow="{{ carousel_arrow }}"
+            data-pagination="{{ carousel_pagination }}"
+            data-transition="{{ carousel_transition }}"
+            data-autoplay="{{ carousel_autoplay }}"
+            data-desktop-columns="{{ columns_desktop }}"
+            data-tabs-columns="{{ columns_tab }}"
+            data-mobile-columns="{{ columns_mobile }}"
+            data-desktop-spacing-grid-horizontal="{{ columns_gap }}"
+            data-mobile-spacing-grid-horizontal="{{ columns_gap }}"
+          >
+            <div class="product-carousel__track- swiper-wrapper">
+              {% for product in collection.products limit: products_to_show %}
+                <div class="product-carousel__slide- swiper-slide">
+                {% render 'card-product',
+                  card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  lazy_load: lazy_load,
+                  show_secondary_image: section.settings.show_secondary_image,
+                  show_vendor: section.settings.show_vendor,
+                  show_rating: section.settings.show_rating,
+                  skip_styles: skip_card_product_styles,
+                  section_id: section.id,
+                  quick_add: section.settings.quick_add
+                %}
+                </div>
+              {% endfor %}
+            </div>
+              {% if carousel_pagination == true %}
+                <div class="swiper-pagination swiper-pagination-progressbar swiper-pagination-custom"></div>
+              {% endif %}
+
+              {%- if carousel_arrow == true -%}
+      <button type="button" id="swiper-prev-{{ section.id }}" class="swiper-button swiper-button-prev" name="previous" aria-label="{{ 'sections.announcements.previous_announcement' | t }}" aria-controls="Slider-{{ section.id }}">
+
+      </button>
+      <button type="button" id="swiper-next-{{ section.id }}" class="swiper-button swiper-button-next" name="next" aria-label="{{ 'sections.announcements.next_announcement' | t }}" aria-controls="Slider-{{ section.id }}">
+             
+      </button>
+    {%- endif -%}
+          </div>
+
+          {% if section.settings.show_view_all and collection.products.size > products_to_show %}
+            <div class="featured-collection-carousel__view-all">
+              <a href="{{ collection.url }}" class="button button--secondary button--full-width">
+                {{ 'sections.featured_collection.view_all' | t }}
+              </a>
+            </div>
+          {% endif %}
+        </div>
+        </featured-collection-carousel>
+      </div>
+
+      
+    </div>
+  </div>
+
+
+<script src="{{ 'featured-collection-carousel.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Collection Carousel",
+  "tag": "section",
+  "class": "section-collection-carousel",
+  "settings": [
+  {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured Collection"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "t:sections.main-collection-product-grid.settings.quick_add.label",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_1"
+        },
+        {
+          "value": "standard",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_2"
+        },
+        {
+          "value": "bulk",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_3"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Carousel Settings"
+    },
+     {
+            "type": "header",
+            "content": "Slider settings"
+        },
+        {
+            "type": "range",
+            "id": "columns_desktop",
+            "min": 1,
+            "max": 10,
+            "step": 1,
+            "default": 4,
+            "label": "Desktop per column"
+        },
+        {
+        "type": "range",
+        "id": "columns_gap",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "default": 10,
+        "label": "column gap"
+        },
+        {
+        "type": "range",
+        "id": "columns_tabs",
+        "min": 1,
+        "max": 4,
+        "step": 1,
+        "default": 3,
+        "label": "Tab per column"
+        },
+        {
+            "type": "select",
+            "id": "columns_mobile",
+            "options": [
+                {
+                    "value": "1",
+                    "label": "1"
+                },
+                {
+                    "value": "2",
+                    "label": "2"
+                }
+            ],
+            "default": "1",
+            "label": "Mobile per column"
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_autoplay",
+            "default": false,
+            "label": "Autoplay"
+        },
+        {
+            "type": "range",
+            "id": "carousel_interval",
+            "min": 1000,
+            "max": 9000,
+            "step": 2000,
+            "unit": "ms",
+            "label": "Autoplay interval",
+            "default": 3000
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_loop",
+            "label": "Loop",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_arrow",
+            "label": "Navigation arrows",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_pagination",
+            "label": "Pagination",
+            "default": false
+        },
+        {
+            "type": "range",
+            "id": "carousel_transition",
+            "min": 50,
+            "max": 800,
+            "step": 50,
+            "unit": "ms",
+            "label": "Transition speed",
+            "default": 400
+        },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show view all button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Product Card Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show product rating",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_view",
+      "label": "Enable quick view",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_image_slideshow",
+      "label": "Enable image slideshow on hover",
+      "default": true,
+      "info": "Shows multiple product images on hover"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "header",
+      "content": "Promotional Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promo_content",
+      "label": "Show promotional content",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "promo_position",
+      "label": "Promotional content position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "promotional_content",
+      "name": "Promotional Content",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Special Offer"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Discover amazing products with special discounts.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button style",
+          "options": [
+            {
+              "value": "primary",
+              "label": "Primary"
+            },
+            {
+              "value": "secondary",
+              "label": "Secondary"
+            },
+            {
+              "value": "outline",
+              "label": "Outline"
+            }
+          ],
+          "default": "primary"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection Carousel",
+      "blocks": [
+        {
+          "type": "promotional_content"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
